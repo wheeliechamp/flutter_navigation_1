@@ -1,33 +1,19 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  static const appTitle = 'Drawer Demo';
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: appTitle,
-      home: MyHomePage(title: appTitle),
-    );
-  }
-}
-
-class SecondPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("SecondPage")),
-    );
-  }
-}
+void main() => runApp(
+  MaterialApp(
+    title: 'Named Routes Demo',
+    // Routeの設定はmainのMaterialAppで設定
+    initialRoute: '/',
+    routes: {
+      '/': (context) => const MyHomePage(title: 'MyHomePage'),
+      '/screen4': (context) => const Screen4(),
+    },
+  ),
+);
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -52,25 +38,88 @@ class MyHomePage extends StatelessWidget {
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: const Text('Item 1'),
+              title: const Text('Screen2(Push)'),
               onTap: () {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SecondPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Screen2()));
               },
             ),
             ListTile(
-              title: const Text('Item 2'),
+              title: const Text('Screen2(PushRep)'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Screen2()));
               },
             ),
+            ListTile(
+                title: const Text('Screen3'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => Screen3()));
+                  print(result);
+                }
+            ),
+            ListTile(
+                title: const Text('Screen4'),
+                onTap: () {
+                  Navigator.pop(context, true);
+                  Navigator.pushNamed(context, '/screen4');
+                }
+            )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Screen2 extends StatelessWidget {
+  const Screen2({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Screen2")),
+    );
+  }
+}
+
+class Screen3 extends StatelessWidget {
+  const Screen3({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: Text("Screen3")),
+        body: ElevatedButton(
+          child: Text("戻る"),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
+    );
+  }
+}
+
+class Screen4 extends StatelessWidget {
+  const Screen4({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Screen4'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          // Within the SecondScreen widget
+          onPressed: () {
+            // Navigate back to the first screen by popping the current route
+            // off the stack.
+            Navigator.pop(context);
+          },
+          child: const Text('Go back!'),
         ),
       ),
     );
